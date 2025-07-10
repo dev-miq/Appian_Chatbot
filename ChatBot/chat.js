@@ -1,166 +1,124 @@
-const chatHistory = document.getElementById('chat-history');
-const chatForm = document.getElementById('chat-form');
-const chatInput = document.getElementById('chat-input');
-const docInput = document.getElementById('doc-input');
-const imgInput = document.getElementById('img-input');
-const docBtn = document.getElementById('doc-btn');
-const imgBtn = document.getElementById('img-btn');
-const micBtn = document.getElementById('mic-btn');
-const filePreview = document.getElementById('file-preview');
+// your code goes here
+// Elements
+const chatbotIcon = document.getElementById('chatbotIcon');
+const chatbotWindow = document.getElementById('chatbotWindow');
+const chatbotHeader = document.getElementById('chatbotHeader');
+const chatbotMessages = document.getElementById('chatbotMessages');
+const chatbotForm = document.getElementById('chatbotForm');
+const chatbotInput = document.getElementById('chatbotInput');
 
-let attachedDocs = [];
-let attachedImgs = [];
+// Show chat window
+chatbotIcon.addEventListener('click', () => {
+  chatbotWindow.classList.add('active');
+  chatbotIcon.style.display = 'none';
+  setTimeout(() => chatbotInput.focus(), 350);
+});
 
-// Dummy bot response function (replace with API call)
-function getBotResponse(userMessage) {
-  return "I'm a bot! You said: " + userMessage;
-}
+// Minimize chat window
+chatbotHeader.addEventListener('click', () => {
+  chatbotWindow.classList.remove('active');
+  setTimeout(() => {
+    chatbotIcon.style.display = 'flex';
+  }, 300);
+});
 
-function appendMessage(message, sender, files = []) {
-  const row = document.createElement('div');
-  row.className = 'message-row ' + sender;
-
-  // Avatar
+// Helper to create message
+function createMessage(content, isUser = false, isLoading = false) {
+  const msg = document.createElement('div');
+  msg.className = 'chatbot-message' + (isUser ? ' user' : '');
   const avatar = document.createElement('div');
-  avatar.className = 'message-avatar';
-  if (sender === 'user') {
-    avatar.textContent = 'You';
-  } else {
-    const img = document.createElement('img');
-    img.src = "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f916.png";
-    img.alt = "Bot";
-    avatar.appendChild(img);
-  }
-
-  // Bubble
+  avatar.className = 'chatbot-avatar';
+  avatar.innerHTML = isUser
+    ? `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ececec"/><circle cx="12" cy="10" r="4" fill="#bbb"/><ellipse cx="12" cy="17" rx="6" ry="3" fill="#bbb"/></svg>`
+    : `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 7v5l4 2" stroke="#fff" stroke-width="2" fill="none"/></svg>`;
   const bubble = document.createElement('div');
-  bubble.className = 'message-bubble';
-  bubble.innerText = message;
-
-  row.appendChild(avatar);
-  row.appendChild(bubble);
-
-  // Add to chat
-  chatHistory.appendChild(row);
-
-  // Show attached files (if any)
-  if (files.length > 0) {
-    const filesRow = document.createElement('div');
-    filesRow.className = 'message-row ' + sender;
-    filesRow.style.marginTop = '-10px';
-    files.forEach(file => {
-      const fileDiv = document.createElement('div');
-      fileDiv.className = 'file-preview-item';
-      if (file.type && file.type.startsWith('image/')) {
-        const img = document.createElement('img');
-        img.src = URL.createObjectURL(file);
-        img.className = 'file-preview-img';
-        fileDiv.appendChild(img);
-      } else {
-        // Document icon SVG
-        const docIcon = document.createElement('span');
-        docIcon.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.83a2 2 0 0 0-.59-1.42l-4.83-4.83A2 2 0 0 0 14.17 2H6zm7 1.5V8a1 1 0 0 0 1 1h4.5L13 3.5z" fill="#19c37d"/></svg>`;
-        fileDiv.appendChild(docIcon);
-      }
-      const span = document.createElement('span');
-      span.textContent = file.name;
-      fileDiv.appendChild(span);
-      filesRow.appendChild(fileDiv);
-    });
-    chatHistory.appendChild(filesRow);
+  bubble.className = 'chatbot-bubble';
+  if (isLoading) {
+    bubble.innerHTML = `<span class="loading-dots">
+      <span></span><span></span><span></span>
+    </span>`;
+  } else {
+    bubble.textContent = content;
   }
-
-  chatHistory.scrollTop = chatHistory.scrollHeight;
+  msg.appendChild(avatar);
+  msg.appendChild(bubble);
+  return msg;
 }
 
-// Document upload
-docBtn.addEventListener('click', () => docInput.click());
-docInput.addEventListener('change', () => {
-  attachedDocs = Array.from(docInput.files);
-  renderFilePreview();
-});
-
-// Image upload
-imgBtn.addEventListener('click', () => imgInput.click());
-imgInput.addEventListener('change', () => {
-  attachedImgs = Array.from(imgInput.files);
-  renderFilePreview();
-});
-
-// Render file preview
-function renderFilePreview() {
-  filePreview.innerHTML = '';
-  attachedDocs.forEach(file => {
-    const previewDiv = document.createElement('div');
-    previewDiv.className = 'file-preview-item';
-    // Document icon SVG
-    previewDiv.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;"><path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.83a2 2 0 0 0-.59-1.42l-4.83-4.83A2 2 0 0 0 14.17 2H6zm7 1.5V8a1 1 0 0 0 1 1h4.5L13 3.5z" fill="#19c37d"/></svg>`;
-    const span = document.createElement('span');
-    span.textContent = file.name;
-    previewDiv.appendChild(span);
-    filePreview.appendChild(previewDiv);
-  });
-  attachedImgs.forEach(file => {
-    const previewDiv = document.createElement('div');
-    previewDiv.className = 'file-preview-item';
-    const img = document.createElement('img');
-    img.src = URL.createObjectURL(file);
-    img.className = 'file-preview-img';
-    previewDiv.appendChild(img);
-    const span = document.createElement('span');
-    span.textContent = file.name;
-    previewDiv.appendChild(span);
-    filePreview.appendChild(previewDiv);
-  });
+// Scroll to bottom
+function scrollToBottom() {
+  chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
 }
 
-// Microphone (speech-to-text)
-let recognition;
-if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  recognition = new SpeechRecognition();
-  recognition.lang = 'en-US';
-  recognition.interimResults = false;
-  recognition.maxAlternatives = 1;
+// Typewriter effect (word by word)
+function typeWriter(element, text, delay = 70) {
+  element.textContent = '';
+  const words = text.split(' ');
+  let i = 0;
+  function typeNext() {
+    if (i < words.length) {
+      element.textContent += (i > 0 ? ' ' : '') + words[i];
+      i++;
+      scrollToBottom();
+      setTimeout(typeNext, delay + Math.random() * 40);
+    }
+  }
+  typeNext();
+}
 
-  micBtn.addEventListener('click', () => {
-    recognition.start();
-    micBtn.style.background = "#19c37d";
-  });
-
-  recognition.onresult = (event) => {
-    const transcript = event.results[0][0].transcript;
-    chatInput.value = transcript;
-    micBtn.style.background = "transparent";
-  };
-
-  recognition.onend = () => {
-    micBtn.style.background = "transparent";
-  };
-} else {
-  micBtn.disabled = true;
-  micBtn.title = "Speech recognition not supported in this browser.";
+// Simulate bot response (replace with real API call as needed)
+function getBotReply(userMsg) {
+  // For demonstration, echo and add a canned reply
+  const responses = [
+    "Hello! How can I assist you today?",
+    "I'm here to help. Ask me anything!",
+    "That's interesting. Tell me more.",
+    "Let me think about that...",
+    "Here's what I found regarding your query."
+  ];
+  // Pick a random response
+  return responses[Math.floor(Math.random() * responses.length)];
 }
 
 // Handle form submit
-chatForm.addEventListener('submit', function(e) {
+chatbotForm.addEventListener('submit', function(e) {
   e.preventDefault();
-  const userMessage = chatInput.value.trim();
-  if (userMessage === '' && attachedDocs.length === 0 && attachedImgs.length === 0) return;
+  const userMsg = chatbotInput.value.trim();
+  if (!userMsg) return;
+  // Add user message
+  const userMessageElem = createMessage(userMsg, true);
+  chatbotMessages.appendChild(userMessageElem);
+  scrollToBottom();
+  chatbotInput.value = '';
+  chatbotInput.focus();
 
-  appendMessage(userMessage, 'user', [...attachedDocs, ...attachedImgs]);
+  // Add bot loading message
+  const botLoadingElem = createMessage('', false, true);
+  chatbotMessages.appendChild(botLoadingElem);
+  scrollToBottom();
 
-  // Clear input and file preview
-  chatInput.value = '';
-  docInput.value = '';
-  imgInput.value = '';
-  attachedDocs = [];
-  attachedImgs = [];
-  renderFilePreview();
-
-  // Simulate bot response (replace with actual API call)
+  // Simulate bot "thinking" for 1s, then type out reply
   setTimeout(() => {
-    const botResponse = getBotResponse(userMessage);
-    appendMessage(botResponse, 'bot');
-  }, 700);
+    // Remove loading
+    botLoadingElem.querySelector('.chatbot-bubble').innerHTML = '';
+    // Get bot reply (simulate API call)
+    const reply = getBotReply(userMsg);
+    // Typewriter effect
+    typeWriter(botLoadingElem.querySelector('.chatbot-bubble'), reply, 90);
+  }, 1000);
+});
+
+// Optional: Pressing "Enter" submits, but Shift+Enter makes newline
+chatbotInput.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    chatbotForm.dispatchEvent(new Event('submit'));
+  }
+});
+
+// Focus input when window is shown
+chatbotWindow.addEventListener('transitionend', () => {
+  if (chatbotWindow.classList.contains('active')) {
+    chatbotInput.focus();
+  }
 });

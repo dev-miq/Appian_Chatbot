@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Center Chatbot Widget</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="chatbot-container">
+    <!-- Chatbot Icon (shown when minimized) -->
+    <div class="chatbot-icon" id="chatbotIcon" title="Open Chat">
+      <!-- Simple chat icon SVG -->
+      <svg viewBox="0 0 24 24">
+        <path d="M12 3C6.48 3 2 6.92 2 12c0 2.08.8 3.97 2.14 5.47L2 21l3.73-1.09C7.7 20.6 9.78 21 12 21c5.52 0 10-3.92 10-9s-4.48-9-10-9zm0 16c-1.91 0-3.68-.43-5.14-1.18l-.36-.19-2.2.64.63-2.12-.23-.27C4.15 14.37 3.5 13.23 3.5 12c0-4.08 4.03-7.5 8.5-7.5s8.5 3.42 8.5 7.5-4.03 7.5-8.5 7.5z"/>
+      </svg>
+    </div>
+    <!-- Chatbot Window (hidden by default) -->
+    <div class="chatbot-window" id="chatbotWindow">
+      <div class="chatbot-header" id="chatbotHeader">
+        <div class="chatbot-header-logo">
+          <!-- Chatbot logo SVG -->
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 7v5l4 2" stroke="#fff" stroke-width="2" fill="none"/>
+          </svg>
+        </div>
+        <div class="chatbot-header-title">Chatbot</div>
+      </div>
+      <div class="chatbot-messages" id="chatbotMessages">
+        <!-- Messages will appear here -->
+      </div>
+      <form class="chatbot-footer" id="chatbotForm" autocomplete="off">
+        <input type="text" class="chatbot-input" id="chatbotInput" placeholder="Type your message..." required autocomplete="off"/>
+        <button type="submit" class="chatbot-send-btn" id="chatbotSendBtn">➤</button>
+      </form>
+    </div>
+  </div>
+  <script src="chat.js"></script>
+</body>
+</html>
